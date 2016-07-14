@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask.ext.cors import CORS
 from flask.ext.compress import Compress
+from flask.ext.cache import Cache
 
 import os
 import requests
@@ -9,6 +10,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 Compress(app)
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 def get_param_dict():
     d = request.get_json(silent=True)
@@ -20,6 +22,7 @@ def get_param_dict():
 
 BERKELEYTIME_URL = 'http://www.berkeleytime.com'
 
+@cache.memoize(timeout=60*60*12)
 def get_section_ids(class_id):
     url = BERKELEYTIME_URL + '/enrollment/sections/{}/'.format(class_id)
     print(url)
@@ -32,6 +35,7 @@ def get_section_ids(class_id):
     section_ids = [(s['section_number'].strip('0'), s['section_id']) for s in fall_sections]
     return dict(section_ids)
 
+@cache.memoize(timeout=60*60*12)
 def get_enrollment_data(section_id):
     url = BERKELEYTIME_URL + '/enrollment/data/{}/'.format(section_id)
     print(url)
