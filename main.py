@@ -32,7 +32,7 @@ def get_section_ids(class_id):
     if len(fall_sections) == 0:
         return {}
     fall_sections = fall_sections[0]['sections']
-    section_ids = [(s['section_number'].strip('0'), s['section_id']) for s in fall_sections]
+    section_ids = [(s['section_number'], s['section_id']) for s in fall_sections]
     return dict(section_ids)
 
 @cache.memoize(timeout=60*60*12)
